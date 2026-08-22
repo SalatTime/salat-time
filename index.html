@@ -15,8 +15,7 @@
 <body>
   <div id="language-screen" class="language-screen">
     <div class="language-card">
-      <div class="brand-mark">🕌</div>
-      <h1>SALAT TIME</h1>
+      <div class="brand-mark">🕌</div><h1>SALAT TIME</h1>
       <p id="language-subtitle">Prayer times for every city in the world, updated daily.</p>
       <div class="language-grid" id="language-grid"></div>
     </div>
@@ -24,66 +23,38 @@
 
   <main id="app" class="app hidden">
     <header class="topbar">
-      <div class="brand">
-        <span class="brand-icon">🕌</span>
-        <div><strong>SALAT TIME</strong><span id="tagline">Prayer times. Nothing more.</span></div>
-      </div>
+      <div class="brand"><span class="brand-icon">🕌</span><div><strong>SALAT TIME</strong><span id="tagline">Prayer times. Nothing more.</span></div></div>
       <button id="language-button" class="ghost-button" aria-label="Change language">العربية</button>
     </header>
 
     <section class="hero">
       <div class="city-picker">
         <div class="city-label">📍 <span id="city-label">Choose a city</span></div>
-        <div class="search-row">
-          <input id="city-search" type="search" autocomplete="off" placeholder="Search any city in the world..." />
-          <button id="search-button" class="primary-button">Search</button>
-        </div>
+        <div class="search-row"><input id="city-search" type="search" autocomplete="off" placeholder="Search any city in the world..." /><button id="search-button" class="primary-button">Search</button></div>
         <div id="search-results" class="search-results" role="listbox"></div>
         <button id="location-button" class="location-button">◎ Use my location</button>
       </div>
     </section>
 
     <section id="prayer-content" class="content hidden">
-      <div class="date-block">
-        <div id="city-name" class="city-name">—</div>
-        <div id="gregorian-date" class="gregorian-date">—</div>
-        <div id="hijri-date" class="hijri-date">—</div>
+      <div class="date-block"><div id="city-name" class="city-name">—</div><div id="timezone" class="timezone">—</div><div id="gregorian-date" class="gregorian-date">—</div><div id="hijri-date" class="hijri-date">—</div></div>
+
+      <div class="day-switcher" role="tablist">
+        <button id="today-tab" class="day-tab active" role="tab">Today</button>
+        <button id="tomorrow-tab" class="day-tab" role="tab">Tomorrow</button>
       </div>
 
-      <div class="next-card">
-        <span id="next-label" class="eyebrow">NEXT PRAYER</span>
-        <div id="next-prayer" class="next-prayer">—</div>
-        <div id="next-time" class="next-time">—</div>
-        <div id="countdown" class="countdown">--:--:--</div>
-      </div>
-
+      <div class="next-card"><span id="next-label" class="eyebrow">NEXT PRAYER</span><div id="next-prayer" class="next-prayer">—</div><div id="next-time" class="next-time">—</div><div id="countdown" class="countdown">--:--:--</div></div>
       <div id="prayer-list" class="prayer-list"></div>
 
-      <div class="actions">
-        <button id="monthly-button" class="action-button">📅 <span>Monthly</span></button>
-        <button id="qibla-button" class="action-button">🧭 <span>Qibla</span></button>
-      </div>
+      <div class="actions"><button id="monthly-button" class="action-button">📅 <span>Monthly</span></button><button id="qibla-button" class="action-button">🧭 <span>Qibla</span></button></div>
     </section>
 
-    <section id="monthly-panel" class="panel hidden">
-      <div class="panel-head"><h2 id="monthly-title">Monthly prayer times</h2><button class="close-button" data-close="monthly-panel">×</button></div>
-      <div id="monthly-loading" class="loading hidden">Loading…</div>
-      <div class="table-wrap"><table><thead><tr id="monthly-head"></tr></thead><tbody id="monthly-body"></tbody></table></div>
-    </section>
+    <section id="monthly-panel" class="panel hidden"><div class="panel-head"><h2 id="monthly-title">Monthly prayer times</h2><button class="close-button" data-close="monthly-panel">×</button></div><div id="monthly-loading" class="loading hidden">Loading…</div><div class="table-wrap"><table><thead><tr id="monthly-head"></tr></thead><tbody id="monthly-body"></tbody></table></div></section>
+    <section id="qibla-panel" class="panel hidden"><div class="panel-head"><h2 id="qibla-title">Qibla</h2><button class="close-button" data-close="qibla-panel">×</button></div><div class="qibla-content"><div class="compass"><div id="compass-arrow">↑</div><span>N</span></div><div><strong id="qibla-bearing">—°</strong><p id="qibla-description">Direction to the Kaaba from your selected city.</p></div><button id="orientation-button" class="primary-button">Enable compass</button></div></section>
 
-    <section id="qibla-panel" class="panel hidden">
-      <div class="panel-head"><h2 id="qibla-title">Qibla</h2><button class="close-button" data-close="qibla-panel">×</button></div>
-      <div class="qibla-content">
-        <div class="compass"><div id="compass-arrow">↑</div><span>N</span></div>
-        <div><strong id="qibla-bearing">—°</strong><p id="qibla-description">Direction to the Kaaba from your selected city.</p></div>
-        <button id="orientation-button" class="primary-button">Enable compass</button>
-      </div>
-    </section>
-
-    <div id="status" class="status" aria-live="polite"></div>
-    <footer>© <span id="year"></span> SALAT TIME</footer>
+    <div id="status" class="status" aria-live="polite"></div><footer>© <span id="year"></span> SALAT TIME</footer>
   </main>
-
   <script src="app.js"></script>
 </body>
 </html>
