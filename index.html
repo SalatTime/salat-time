@@ -10,7 +10,7 @@
   <meta property="og:type" content="website" />
   <title>SALAT TIME — Prayer times worldwide</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🕌%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="styles.css?v=3" />
 </head>
 <body>
   <div id="language-screen" class="language-screen"><div class="language-card"><div class="brand-mark">🕌</div><h1>SALAT TIME</h1><p id="language-subtitle">Prayer times for every city in the world, updated daily.</p><div class="language-grid" id="language-grid"></div></div></div>
@@ -20,8 +20,9 @@
     <section id="prayer-content" class="content hidden"><div class="date-block"><div id="city-name" class="city-name">—</div><div id="timezone" class="timezone">—</div><div id="gregorian-date" class="gregorian-date">—</div><div id="hijri-date" class="hijri-date">—</div></div><div class="day-switcher" role="tablist"><button id="today-tab" class="day-tab active">Today</button><button id="tomorrow-tab" class="day-tab">Tomorrow</button></div><div class="next-card"><span id="next-label" class="eyebrow">NEXT PRAYER</span><div id="next-prayer" class="next-prayer">—</div><div id="next-time" class="next-time">—</div><div id="countdown" class="countdown">--:--:--</div></div><div id="prayer-list" class="prayer-list"></div><div class="actions"><button id="monthly-button" class="action-button">📅 <span>Monthly</span></button><button id="qibla-button" class="action-button">🧭 <span>Qibla</span></button></div></section>
     <section id="monthly-panel" class="panel hidden"><div class="panel-head"><h2 id="monthly-title">Monthly prayer times</h2><button class="close-button" data-close="monthly-panel">×</button></div><div id="monthly-loading" class="loading hidden">Loading…</div><div class="table-wrap"><table><thead><tr id="monthly-head"></tr></thead><tbody id="monthly-body"></tbody></table></div></section>
     <section id="qibla-panel" class="panel hidden"><div class="panel-head"><h2 id="qibla-title">Qibla</h2><button class="close-button" data-close="qibla-panel">×</button></div><div class="qibla-content"><div class="compass"><div id="compass-arrow">↑</div><span>N</span></div><div><strong id="qibla-bearing">—°</strong><p id="qibla-description">Direction to the Kaaba from your selected city.</p></div><button id="orientation-button" class="primary-button">Enable compass</button></div></section>
-    <div id="status" class="status" aria-live="polite"></div><footer>© <span id="year"></span> SALAT TIME</footer>
+    <div id="status" class="status" aria-live="polite"></div><footer>© <span id="year"></span> SALAT TIME · City data: GeoNames</footer>
   </main>
-  <script src="app-fixed.js?v=2"></script>
+  <script src="app-fixed.js?v=3"></script>
+  <script src="local-city-search.js?v=1"></script>
 </body>
 </html>
