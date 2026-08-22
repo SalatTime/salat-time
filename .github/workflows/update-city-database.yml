@@ -3,9 +3,6 @@ name: Update world city database
 on:
   workflow_dispatch:
   push:
-    paths:
-      - 'scripts/build-city-db.py'
-      - '.github/workflows/update-city-database.yml'
   schedule:
     - cron: '17 2 * * *'
 
