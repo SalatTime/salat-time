@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://salattime.github.io/salat-time/sitemap.xml
