@@ -1,0 +1,11 @@
+{
+  "name": "SALAT TIME",
+  "short_name": "SALAT TIME",
+  "description": "Prayer times for every city in the world, updated daily.",
+  "start_url": "/salat-time/",
+  "scope": "/salat-time/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
+  "icons": []
+}
