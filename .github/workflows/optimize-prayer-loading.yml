@@ -1,0 +1,35 @@
+name: Optimize prayer loading
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app-fixed.js'
+      - 'local-city-search.js'
+      - '.github/workflows/optimize-prayer-loading.yml'
+permissions:
+  contents: write
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make city results display without waiting for tomorrow
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app-fixed.js')
+          s=p.read_text(encoding='utf-8')
+          old="async function loadBoth(){$('status').textContent=t('loading');try{const [today,tomorrow]=await Promise.all([getDay(0),getDay(1)]);days={today,tomorrow};$('status').textContent='';$('timezone').textContent=`${t('timezone')}: ${today.meta?.timezone||'—'}`;render()}catch(e){console.error(e);$('status').textContent=t('error')}}"
+          new="async function loadBoth(){$('status').textContent=t('loading');try{const today=await getDay(0);days={today,tomorrow:null};$('status').textContent='';$('timezone').textContent=`${t('timezone')}: ${today.meta?.timezone||'—'}`;render()}catch(e){console.error(e);$('status').textContent=t('error')}}"
+          if old in s:
+              p.write_text(s.replace(old,new,1),encoding='utf-8')
+          else:
+              print('loadBoth already optimized or pattern changed')
+          PY
+      - name: Commit optimization
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app-fixed.js
+          git diff --cached --quiet || git commit -m 'Speed up city prayer data loading [skip ci]'
+          git push
