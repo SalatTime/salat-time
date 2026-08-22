@@ -1,0 +1,28 @@
+name: Ensure localized city date
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch-date:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add robust localized date script
+        shell: bash
+        run: |
+          if ! grep -q 'date-i18n-v4.js' index.html; then
+            python3 - <<'PY'
+from pathlib import Path
+p=Path('index.html')
+s=p.read_text()
+s=s.replace('</body>', '  <script src="date-i18n-v4.js?v=1"></script>\n</body>')
+p.write_text(s)
+PY
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Load robust localized city date script'
+          git push
