@@ -5,12 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="description" content="Prayer times for every city in the world, updated daily." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://salattime.github.io/salat-time/" />
   <meta property="og:title" content="SALAT TIME" />
   <meta property="og:description" content="Prayer times for every city in the world, updated daily." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://salattime.github.io/salat-time/" />
   <title>SALAT TIME — Prayer times worldwide</title>
+  <link rel="manifest" href="site.webmanifest" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🕌%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="styles.css?v=3" />
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"SALAT TIME",
+    "url":"https://salattime.github.io/salat-time/",
+    "description":"Prayer times for every city in the world, updated daily.",
+    "inLanguage":["ar","en","fr","es","zh","hi","ru","fa"]
+  }
+  </script>
   <style>#tomorrow-tab{display:none!important}</style>
 </head>
 <body>
@@ -23,7 +37,7 @@
     <section id="qibla-panel" class="panel hidden"><div class="panel-head"><h2 id="qibla-title">Qibla</h2><button class="close-button" data-close="qibla-panel">×</button></div><div class="qibla-content"><div class="compass"><div id="compass-arrow">↑</div><span>N</span></div><div><strong id="qibla-bearing">—°</strong><p id="qibla-description">Direction to the Kaaba from your selected city.</p></div><button id="orientation-button" class="primary-button">Enable compass</button></div></section>
     <div id="status" class="status" aria-live="polite"></div><footer>© <span id="year"></span> SALAT TIME · City data: GeoNames</footer>
   </main>
-  <script src="app-fixed.js?v=3"></script>
-  <script src="local-city-search.js?v=1"></script>
+  <script src="app-fixed.js?v=4"></script>
+  <script src="local-city-search.js?v=2"></script>
 </body>
 </html>
