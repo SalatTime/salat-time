@@ -1,0 +1,3 @@
+SALAT TIME uses GeoNames geographical data (cities500), licensed under CC BY 4.0.
+Source: https://www.geonames.org/
+The database is downloaded and rebuilt daily by GitHub Actions.
