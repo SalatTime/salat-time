@@ -1,7 +1,12 @@
-name: Update world city database
+name: Update world city + prayer + weather database
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/build-city-db.py'
+      - 'scripts/build-global-times.mjs'
+      - 'package.json'
   schedule:
     - cron: '17 2 * * *'
 
@@ -9,24 +14,36 @@ permissions:
   contents: write
 
 jobs:
-  update-cities:
+  update-database:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 90
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install calculation library
+        run: npm install --no-audit --no-fund
+
       - name: Build GeoNames city index
         run: python3 scripts/build-city-db.py
 
-      - name: Commit updated database
+      - name: Build 3-day prayer + weather database
+        run: node scripts/build-global-times.mjs
+
+      - name: Commit updated databases
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data
           if git diff --cached --quiet; then
-            echo "No city database changes."
+            echo "No database changes."
           else
-            git commit -m "chore: update world city database"
+            git commit -m "chore: refresh global prayer and weather database"
             git push
           fi
