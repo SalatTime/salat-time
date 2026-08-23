@@ -6,12 +6,13 @@ import { Coordinates, CalculationMethod, PrayerTimes, Madhab } from 'adhan';
 const ROOT = process.cwd();
 const CITY_DIR = path.join(ROOT, 'data', 'cities');
 const OUT_DIR = path.join(ROOT, 'data', 'times');
+const TMP_DIR = path.join(ROOT, 'data', '.times-build');
 const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
 const SHARDS = 1024;
 const DAYS = 3;
+const WEATHER_BATCH = 50;
 const METHODS = { dz: 'mwl', sa: 'ummAlQura', eg: 'egyptian', ma: 'mwl', tn: 'mwl', tr: 'turkey', ru: 'mwl', pk: 'karachi', in: 'mwl', bd: 'karachi', gb: 'mwl', fr: 'mwl', us: 'northAmerica', ca: 'northAmerica', id: 'singapore', my: 'singapore', sg: 'singapore', qa: 'qatar', kw: 'kuwait', ae: 'dubai', jo: 'mwl', ir: 'tehran' };
 
-const pad = n => String(n).padStart(2, '0');
 const shard = id => (Number(id) % SHARDS).toString(16).padStart(3, '0');
 const methodFor = code => METHODS[code] || 'mwl';
 function paramsFor(code) {
@@ -40,7 +41,6 @@ function prayerFor(city, offset) {
   const pt = new PrayerTimes(new Coordinates(city.lat, city.lon), date, paramsFor(city.countryCode));
   return { date: d.iso, timezone: tz, fajr: fmt(pt.fajr, tz), sunrise: fmt(pt.sunrise, tz), dhuhr: fmt(pt.dhuhr, tz), asr: fmt(pt.asr, tz), maghrib: fmt(pt.maghrib, tz), isha: fmt(pt.isha, tz) };
 }
-
 async function loadCities() {
   const files = (await fs.readdir(CITY_DIR)).filter(f => f.endsWith('.json'));
   const byId = new Map();
@@ -56,21 +56,25 @@ async function fetchWeather(batch) {
   const url = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=celsius&timezone=auto&forecast_days=${DAYS}`;
   for (let attempt = 1; attempt <= 4; attempt++) {
     try {
-      const r = await fetch(url, { signal: AbortSignal.timeout(60000) });
+      const r = await fetch(url, { signal: AbortSignal.timeout(45000) });
       if (!r.ok) throw new Error(`weather ${r.status}`);
       const j = await r.json();
       return Array.isArray(j) ? j : [j];
     } catch (e) {
-      if (attempt === 4) throw e;
-      await new Promise(r => setTimeout(r, attempt * 1500));
+      if (attempt === 4) {
+        console.warn(`Weather batch failed after 4 attempts: ${e.message}`);
+        return [];
+      }
+      await new Promise(r => setTimeout(r, attempt * 1200));
     }
   }
+  return [];
 }
 
 const cities = await loadCities();
 console.log(`Preparing ${cities.length} unique cities for ${DAYS} days`);
-await fs.rm(OUT_DIR, { recursive: true, force: true });
-await fs.mkdir(OUT_DIR, { recursive: true });
+await fs.rm(TMP_DIR, { recursive: true, force: true });
+await fs.mkdir(TMP_DIR, { recursive: true });
 const output = Array.from({ length: SHARDS }, () => ({}));
 
 for (let i = 0; i < cities.length; i++) {
@@ -80,9 +84,8 @@ for (let i = 0; i < cities.length; i++) {
   if ((i + 1) % 10000 === 0) console.log(`Prayer calculations: ${i + 1}/${cities.length}`);
 }
 
-const BATCH = 1000;
-for (let i = 0; i < cities.length; i += BATCH) {
-  const batch = cities.slice(i, i + BATCH);
+for (let i = 0; i < cities.length; i += WEATHER_BATCH) {
+  const batch = cities.slice(i, i + WEATHER_BATCH);
   const weather = await fetchWeather(batch);
   for (let j = 0; j < batch.length; j++) {
     const c = batch[j];
@@ -91,12 +94,15 @@ for (let i = 0; i < cities.length; i += BATCH) {
     const entry = output[Number(c.id) % SHARDS][String(c.id)];
     entry.weather = w.daily.time.map((date, k) => ({ date, max: Math.round(w.daily.temperature_2m_max?.[k] ?? 0), min: Math.round(w.daily.temperature_2m_min?.[k] ?? 0), code: w.daily.weather_code?.[k] ?? null }));
   }
-  console.log(`Weather: ${Math.min(i + BATCH, cities.length)}/${cities.length}`);
+  if ((i + batch.length) % 5000 === 0 || i + batch.length === cities.length) console.log(`Weather: ${i + batch.length}/${cities.length}`);
 }
 
 for (let i = 0; i < SHARDS; i++) {
   const rows = output[i];
-  if (Object.keys(rows).length) await fs.writeFile(path.join(OUT_DIR, `${shard(i)}.json`), JSON.stringify(rows));
+  if (Object.keys(rows).length) await fs.writeFile(path.join(TMP_DIR, `${shard(i)}.json`), JSON.stringify(rows));
 }
-await fs.writeFile(path.join(OUT_DIR, 'manifest.json'), JSON.stringify({ generatedAt: new Date().toISOString(), cityCount: cities.length, days: DAYS, shards: SHARDS, source: 'GeoNames + Adhan JS + Open-Meteo' }, null, 2));
-console.log('Global prayer + weather database generated.');
+await fs.writeFile(path.join(TMP_DIR, 'manifest.json'), JSON.stringify({ generatedAt: new Date().toISOString(), cityCount: cities.length, days: DAYS, shards: SHARDS, weatherBatch: WEATHER_BATCH, source: 'GeoNames + Adhan JS + Open-Meteo' }, null, 2));
+
+await fs.rm(OUT_DIR, { recursive: true, force: true });
+await fs.rename(TMP_DIR, OUT_DIR);
+console.log('Global prayer + weather database generated successfully.');
