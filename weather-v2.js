@@ -9,10 +9,20 @@
     const lang=document.documentElement.lang||'en',tx=T[lang]||T.en;
     let box=document.getElementById('weather-card');
     if(!box){box=document.createElement('div');box.id='weather-card';box.className='weather-card';const anchor=document.getElementById('hijri-date');if(!anchor)return;anchor.insertAdjacentElement('afterend',box)}
-    const k=`${city.lat},${city.lon},${lang},${new Date().toISOString().slice(0,10)}`;
+    const dayKey=new Date().toISOString().slice(0,10),k=`${city.lat},${city.lon},${lang},${dayKey}`;
     if(k===key&&box.dataset.ready==='1')return;key=k;box.dataset.ready='0';
     box.innerHTML=`<span class="weather-icon">🌡️</span><div><div class="weather-main weather-loading">…</div><div class="weather-detail">${tx[0]}</div></div>`;
-    try{const u=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(city.lat)}&longitude=${encodeURIComponent(city.lon)}&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=celsius&timezone=auto&forecast_days=1`;const r=await fetch(u);if(!r.ok)throw Error();const j=await r.json();const max=Math.round(j.daily.temperature_2m_max[0]),min=Math.round(j.daily.temperature_2m_min[0]);box.innerHTML=`<span class="weather-icon">${icon(j.daily.weather_code[0])}</span><div><div class="weather-main">${max}° / ${min}°C</div><div class="weather-detail">${esc(tx[0])} · ${esc(tx[1])}</div></div>`;box.dataset.ready='1'}catch{box.innerHTML=`<span class="weather-icon">🌡️</span><div><div class="weather-main">—</div><div class="weather-detail">${esc(tx[0])}</div></div>`;box.dataset.ready='1'}
+    const cacheKey=`salat_weather_${(+city.lat).toFixed(4)}_${(+city.lon).toFixed(4)}_${dayKey}`;
+    try{
+      let j=null;try{const c=JSON.parse(localStorage.getItem(cacheKey)||'null');if(c?.daily)j=c}catch{}
+      if(!j){
+        const u=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(city.lat)}&longitude=${encodeURIComponent(city.lon)}&daily=temperature_2m_max,temperature_2m_min,weather_code&temperature_unit=celsius&timezone=auto&forecast_days=3`;
+        const r=await Promise.race([fetch(u),new Promise((_,rej)=>setTimeout(()=>rej(Error('timeout')),12000))]);if(!r.ok)throw Error();
+        const data=await r.json();if(!data.daily)throw Error();j={daily:data.daily,savedAt:Date.now()};localStorage.setItem(cacheKey,JSON.stringify(j));
+      }
+      const max=Math.round(j.daily.temperature_2m_max[0]),min=Math.round(j.daily.temperature_2m_min[0]);
+      box.innerHTML=`<span class="weather-icon">${icon(j.daily.weather_code[0])}</span><div><div class="weather-main">${max}° / ${min}°C</div><div class="weather-detail">${esc(tx[0])} · ${esc(tx[1])}</div></div>`;box.dataset.ready='1';
+    }catch{box.innerHTML=`<span class="weather-icon">🌡️</span><div><div class="weather-main">—</div><div class="weather-detail">${esc(tx[0])}</div></div>`;box.dataset.ready='1'}
   }
   window.SalatTimeWeather=load;
   document.addEventListener('DOMContentLoaded',()=>setTimeout(load,500));
