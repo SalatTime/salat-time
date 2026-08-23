@@ -2,6 +2,7 @@
   "name": "salat-time-data-builder",
   "private": true,
   "type": "module",
+  "version": "1.0.1",
   "dependencies": {
     "adhan": "^4.4.3"
   }
