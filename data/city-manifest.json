@@ -1,7 +1,7 @@
 {
   "source": "GeoNames cities500",
-  "updated": "2026-10-29T08:29:10.678195+00:00",
-  "cityCount": 236849,
+  "updated": "2026-10-30T08:39:38.665708+00:00",
+  "cityCount": 236851,
   "shards": 42200,
   "threshold": "population > 500 or administrative seats down to PPLA4"
 }
